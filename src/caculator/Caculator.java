@@ -19,7 +19,6 @@ public class Caculator extends javax.swing.JFrame {
 
     boolean clearOnNextDigit, percent;
     double lastNumber;
-//    double result = 0;
     String lastOperator = "0";
 
     public Caculator() {
@@ -95,6 +94,11 @@ public class Caculator extends javax.swing.JFrame {
 
     void processOperator(String op) {
         if (displayMode != ERROR_MODE) {
+            if(clearOnNextDigit) {
+                lastOperator = op;
+                return;
+            }
+            
             double numberInDisplay = Double.parseDouble(txtDisplay.getText());
 
             if (!lastOperator.equals("0")) {
@@ -190,6 +194,8 @@ public class Caculator extends javax.swing.JFrame {
         setTitle("Caculator");
         setResizable(false);
 
+        txtDisplay.setEditable(false);
+        txtDisplay.setBackground(new java.awt.Color(255, 255, 255));
         txtDisplay.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         txtDisplay.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txtDisplay.setText("0");
