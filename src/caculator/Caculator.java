@@ -5,6 +5,8 @@
  */
 package caculator;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author Đỗ Trung Đức
@@ -17,8 +19,9 @@ public class Caculator extends javax.swing.JFrame {
     private final int ERROR_MODE = 2;
     private int displayMode;
 
-    boolean clearOnNextDigit, percent;
+    boolean clearOnNextDigit;
     double lastNumber;
+    double lastNumberOnResult;
     String lastOperator = "0";
 
     public Caculator() {
@@ -32,16 +35,15 @@ public class Caculator extends javax.swing.JFrame {
         }
 
         String inputString = txtDisplay.getText();
-
-        if (inputString.indexOf("0") == 0) {
-            inputString = inputString.substring(1);
-        }
-
-        if ((!inputString.equals("0") || digit > 0)
-                && inputString.length() < MAX_INPUT_LENGTH) {
+        if (inputString.equals("0") && digit == 0) {
+            displayMode = INPUT_MODE;
+            clearOnNextDigit = false;
+            return;
+        } else if (inputString.equals("0") && digit != 0) {
+            txtDisplay.setText(digit + "");
+        } else if (inputString.length() < MAX_INPUT_LENGTH) {
             txtDisplay.setText(inputString + digit);
         }
-
         displayMode = INPUT_MODE;
         clearOnNextDigit = false;
     }
@@ -66,7 +68,13 @@ public class Caculator extends javax.swing.JFrame {
     }
 
     private void displayResult(double result) {
-        txtDisplay.setText(Double.toString(result));
+        String resultString = Double.toString(result);
+        String bigDecimal = new BigDecimal(resultString).stripTrailingZeros().toPlainString();
+        if (bigDecimal.length() < MAX_INPUT_LENGTH) {
+            txtDisplay.setText(bigDecimal);
+        } else {
+            txtDisplay.setText(Double.toString(result));
+        }
         lastNumber = result;
         displayMode = RESULT_MODE;
         clearOnNextDigit = true;
@@ -82,6 +90,7 @@ public class Caculator extends javax.swing.JFrame {
         String inputString = txtDisplay.getText();
         if (!inputString.contains(".")) {
             txtDisplay.setText(inputString + ".");
+            clearOnNextDigit = false;
         }
     }
 
@@ -94,11 +103,11 @@ public class Caculator extends javax.swing.JFrame {
 
     void processOperator(String op) {
         if (displayMode != ERROR_MODE) {
-            if(clearOnNextDigit) {
+            if (clearOnNextDigit) {
                 lastOperator = op;
                 return;
             }
-            
+
             double numberInDisplay = Double.parseDouble(txtDisplay.getText());
 
             if (!lastOperator.equals("0")) {
@@ -121,6 +130,11 @@ public class Caculator extends javax.swing.JFrame {
     private double processLastOperator() throws DividedByZeroException {
         double result = 0;
         double numberInDisplay = Double.parseDouble(txtDisplay.getText());
+        if (displayMode != RESULT_MODE) {
+            lastNumberOnResult = numberInDisplay;
+        } else {
+            numberInDisplay = lastNumberOnResult;
+        }
 
         if (lastOperator.equals("/")) {
             if (numberInDisplay == 0) {
@@ -141,6 +155,10 @@ public class Caculator extends javax.swing.JFrame {
             result = lastNumber + numberInDisplay;
         }
 
+        if (lastOperator.equals("0")) {
+            result = numberInDisplay;
+        }
+
         return result;
     }
 
@@ -154,7 +172,6 @@ public class Caculator extends javax.swing.JFrame {
             } catch (DividedByZeroException e) {
                 displayError("SYNTAX ERROR");
             }
-            lastOperator = "0";
         }
     }
 
@@ -461,10 +478,10 @@ public class Caculator extends javax.swing.JFrame {
                 .addGap(17, 17, 17)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnMR, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnMplus, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnMminus, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnMC, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(btnMminus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnMC, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnMplus, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAC, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -573,10 +590,12 @@ public class Caculator extends javax.swing.JFrame {
 
     private void btnSqrtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSqrtActionPerformed
         if (displayMode != ERROR_MODE) {
-            if (txtDisplay.getText().indexOf("-") == 0) {
+            double numberInDisplay = Double.parseDouble(txtDisplay.getText());
+            if (numberInDisplay <= 0) {
                 displayError("SYNTAX ERROR!");
+                return;
             }
-            double result = Math.sqrt(Double.parseDouble(txtDisplay.getText()));
+            double result = Math.sqrt(numberInDisplay);
             displayResult(result);
         }
     }//GEN-LAST:event_btnSqrtActionPerformed
@@ -585,6 +604,7 @@ public class Caculator extends javax.swing.JFrame {
         if (displayMode != ERROR_MODE) {
             if (txtDisplay.getText().equals("0")) {
                 displayError("SYNTAX ERROR!");
+                return;
             }
             Double result = 1 / Double.parseDouble(txtDisplay.getText());
             displayResult(result);
@@ -600,8 +620,9 @@ public class Caculator extends javax.swing.JFrame {
 
     private void btnBackspaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackspaceActionPerformed
         if (displayMode != ERROR_MODE) {
-            txtDisplay.setText(txtDisplay.getText().substring(0, txtDisplay.getText().length()-1));
-            if (txtDisplay.getText().length() < 1) {
+            String inputString = txtDisplay.getText();
+            txtDisplay.setText(inputString.substring(0, inputString.length() - 1));
+            if (txtDisplay.getText().length() < 1 || txtDisplay.getText().equals("-")) {
                 txtDisplay.setText("0");
             }
         }
@@ -611,6 +632,7 @@ public class Caculator extends javax.swing.JFrame {
         txtDisplay.setText("0");
         lastOperator = "0";
         lastNumber = 0;
+        lastNumberOnResult = 0;
         displayMode = INPUT_MODE;
         clearOnNextDigit = true;
     }//GEN-LAST:event_btnACActionPerformed
