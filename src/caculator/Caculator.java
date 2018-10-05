@@ -19,10 +19,12 @@ public class Caculator extends javax.swing.JFrame {
     private final int ERROR_MODE = 2;
     private int displayMode;
 
-    boolean clearOnNextDigit;
-    double lastNumber;
-    double lastNumberOnResult;
-    String lastOperator = "0";
+    private boolean clearOnNextDigit;
+    private double lastNumber;
+    private double lastNumberOnResult;
+    private String lastOperator = "0";
+
+    private double memory = 0;
 
     public Caculator() {
         initComponents();
@@ -259,15 +261,35 @@ public class Caculator extends javax.swing.JFrame {
 
         btnMplus.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnMplus.setText("M+");
+        btnMplus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMplusActionPerformed(evt);
+            }
+        });
 
         btnMminus.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnMminus.setText("M-");
+        btnMminus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMminusActionPerformed(evt);
+            }
+        });
 
         btnMC.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnMC.setText("MC");
+        btnMC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMCActionPerformed(evt);
+            }
+        });
 
         btnMR.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnMR.setText("MR");
+        btnMR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMRActionPerformed(evt);
+            }
+        });
 
         btnAC.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         btnAC.setText("AC");
@@ -596,7 +618,12 @@ public class Caculator extends javax.swing.JFrame {
                 return;
             }
             double result = Math.sqrt(numberInDisplay);
-            displayResult(result);
+            String bigDecimal = new BigDecimal(Double.toString(result)).stripTrailingZeros().toPlainString();
+            if (bigDecimal.length() < MAX_INPUT_LENGTH) {
+                txtDisplay.setText(bigDecimal);
+            } else {
+                txtDisplay.setText(Double.toString(result));
+            }
         }
     }//GEN-LAST:event_btnSqrtActionPerformed
 
@@ -634,8 +661,29 @@ public class Caculator extends javax.swing.JFrame {
         lastNumber = 0;
         lastNumberOnResult = 0;
         displayMode = INPUT_MODE;
+        memory = 0;
         clearOnNextDigit = true;
     }//GEN-LAST:event_btnACActionPerformed
+
+    private void btnMplusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMplusActionPerformed
+        if (displayMode != ERROR_MODE) {
+            memory += Double.parseDouble(txtDisplay.getText());
+        }
+    }//GEN-LAST:event_btnMplusActionPerformed
+
+    private void btnMminusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMminusActionPerformed
+        if (displayMode != ERROR_MODE) {
+            memory -= Double.parseDouble(txtDisplay.getText());
+        }
+    }//GEN-LAST:event_btnMminusActionPerformed
+
+    private void btnMCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMCActionPerformed
+        memory = 0;
+    }//GEN-LAST:event_btnMCActionPerformed
+
+    private void btnMRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMRActionPerformed
+        displayResult(memory);
+    }//GEN-LAST:event_btnMRActionPerformed
 
     /**
      * @param args the command line arguments

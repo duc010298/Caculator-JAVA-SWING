@@ -234,6 +234,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="M+"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMplusActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnMminus">
       <Properties>
@@ -242,6 +245,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="M-"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMminusActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnMC">
       <Properties>
@@ -250,6 +256,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="MC"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMCActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnMR">
       <Properties>
@@ -258,6 +267,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="MR"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMRActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnAC">
       <Properties>
