@@ -634,14 +634,24 @@ public class Caculator extends javax.swing.JFrame {
                 return;
             }
             Double result = 1 / Double.parseDouble(txtDisplay.getText());
-            displayResult(result);
+            String bigDecimal = new BigDecimal(Double.toString(result)).stripTrailingZeros().toPlainString();
+            if (bigDecimal.length() < MAX_INPUT_LENGTH) {
+                txtDisplay.setText(bigDecimal);
+            } else {
+                txtDisplay.setText(Double.toString(result));
+            }
         }
     }//GEN-LAST:event_btn1DivisionXActionPerformed
 
     private void btnPercentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPercentActionPerformed
         if (displayMode != ERROR_MODE) {
             Double result = Double.parseDouble(txtDisplay.getText()) / 100;
-            displayResult(result);
+            String bigDecimal = new BigDecimal(Double.toString(result)).stripTrailingZeros().toPlainString();
+            if (bigDecimal.length() < MAX_INPUT_LENGTH) {
+                txtDisplay.setText(bigDecimal);
+            } else {
+                txtDisplay.setText(Double.toString(result));
+            }
         }
     }//GEN-LAST:event_btnPercentActionPerformed
 
